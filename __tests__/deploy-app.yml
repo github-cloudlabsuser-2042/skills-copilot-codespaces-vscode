@@ -1,0 +1,32 @@
+# Create a github action to email a report from a file at 6 am daily
+
+name: Deploy App
+on:
+  schedule:
+    - cron: "0 6 * * *"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: npm install
+      - name: Email report
+        uses: dawee/email-report-action@v1
+        with:
+          to: ${{ secrets.EMAIL_RECIPIENT }}
+          from: ${{ secrets.EMAIL_SENDER }}
+          subject: "Daily report"
+          text: "Report attached"
+          attachments: "report.txt"
+          smtp-server: ${{ secrets.SMTP_SERVER }}
+          smtp-port: ${{ secrets.SMTP_PORT }}
+          smtp-username: ${{ secrets.SMTP_USERNAME }}
+          smtp-password: ${{ secrets.SMTP_PASSWORD }}
+          smtp-secure: "true"
+          smtp-reject-unauthorized: "false"
